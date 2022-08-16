@@ -30,9 +30,13 @@ export class EmployeeListComponent implements OnInit {
       this.employees=data.Employees
       this.tableData=this.employees
       this.collectionSize=data.Employees.length;
-      this.pages=Array(Math.ceil(this.collectionSize/5))
+      this.calculatePages()
+      // this.pages=Array(Math.ceil(this.collectionSize/5))
       this.showPage(0)
     })
+  }
+  calculatePages(){
+    this.pages=Array(Math.ceil(this.tableData.length/5))
   }
   //Functionality for Previous and Next buttons
   togglePage(event:any){
@@ -65,11 +69,12 @@ export class EmployeeListComponent implements OnInit {
     var filteredData=[]
     for(let employee of this.employees){
       var search=this.searchTerm.toLowerCase()
-      if(employee.firstName.toLowerCase().includes(search) || employee.lastName.toLowerCase().includes(search))
+      if(employee.firstName.toLowerCase().includes(search) || employee.lastName.toLowerCase().includes(search) || employee.userId.toLowerCase().includes(search))
         filteredData.push(employee);
     }
     this.tableData=filteredData
     console.log(this.searchTerm)
+    this.calculatePages()
     this.showPage(0)
   }
   //Filter by jobTitle(s)
@@ -90,6 +95,7 @@ export class EmployeeListComponent implements OnInit {
     else{
       this.tableData=this.employees
     }
+    this.calculatePages()
     this.showPage(0)
   }
   //Filter by region
@@ -107,6 +113,7 @@ export class EmployeeListComponent implements OnInit {
       this.tableData=this.employees
     }
     console.log(event.target.id)
+    this.calculatePages()
     this.showPage(0)
   }
 }
