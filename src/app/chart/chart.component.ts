@@ -25,7 +25,7 @@ export class ChartComponent implements OnInit {
    height = 400;
    employees:any;
   constructor(private employeeDataService: EmployeeDataService) {
-    // for(var title in JobTitles.jobTitle)
+    
   }
 
   ngOnInit(): void {
@@ -44,7 +44,6 @@ export class ChartComponent implements OnInit {
         }
       }
     }
-    console.log(this.data)
   }
 
 }
