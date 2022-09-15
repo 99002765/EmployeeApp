@@ -1,13 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { MatDialog } from "@angular/material/dialog";
+import { ChartComponent } from '../chart/chart.component';
+import { Employee } from "../employee";
+import { EmployeeDataService } from '../employee-data.service';
+import { EmployeeFormComponent } from '../employee-form/employee-form.component';
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
   styleUrls: ['./employee-list.component.scss']
 })
 export class EmployeeListComponent implements OnInit {
+  JOB_TITLES=[
+    "Associate",
+    "Developer",
+    "Manager",
+    "Project Lead",
+    "Scrum Master",
+    "Tech Lead"
+  ];
   searchTerm:String='';
   region:String='';
-  employees:any;
+  employees:Employee[]=[];
   tableData:any;
   pageData:any;
   curPage:number=0;
@@ -17,7 +30,8 @@ export class EmployeeListComponent implements OnInit {
   displayedColumns=['userId','firstName','lastName','jobTitle','region']
   collectionSize: number=5;
   titleFilters:String[]=[];
-  constructor() { }
+  @ViewChildren("checkboxes") checkboxes: QueryList<ElementRef> | undefined;
+  constructor(private dialog:MatDialog,private employeeDataService: EmployeeDataService) { }
 
   ngOnInit(): void {
     this.getEmployees()
@@ -25,18 +39,20 @@ export class EmployeeListComponent implements OnInit {
   //Get data from the backend and initialize the table
   getEmployees(){
     
-    fetch("http://localhost:8080/employees")
+    fetch("http://localhost:8080/getFromDB")
     .then(response=>response.json())
     .then(data=>{
-      this.employees=data.Employees
+      console.log(data)
+      this.employees=data
       this.tableData=this.employees
-      this.collectionSize=data.Employees.length;
+      this.collectionSize=data.length;
       this.calculatePages()
       this.showPage(0)
     })
   }
+  //Calculate number of total pages in current data
   calculatePages(){
-    this.pages=Array(Math.ceil(this.tableData.length/5))
+    this.pages=Array(Math.ceil(this.tableData.length/this.pageSize))
   }
   //Functionality for Previous and Next buttons
   togglePage(event:any){
@@ -96,5 +112,21 @@ export class EmployeeListComponent implements OnInit {
     this.tableData=filteredData;
     this.calculatePages()
     this.showPage(0)
+  }
+  resetFilters(){
+    this.searchTerm=''
+    this.region=''
+    this.titleFilters=[]
+    if(this.checkboxes)
+      this.checkboxes.forEach((element) => {
+        element.nativeElement.checked = false;
+      });
+    this.filter()
+  }
+  openCharts(){
+    this.dialog.open(ChartComponent);
+  }
+  openForm(){
+    this.dialog.open(EmployeeFormComponent,{width:"80%"});
   }
 }

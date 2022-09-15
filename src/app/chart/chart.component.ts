@@ -19,7 +19,7 @@ export class ChartComponent implements OnInit {
       ['Scrum Master', 0] 
    ];
    columnNames = ['Job Title', 'Count'];
-   options = {    
+   options = {
    };
    width = 1000;
    height = 400;
@@ -29,10 +29,18 @@ export class ChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.generateChart()
+    // this.employeeDataService.getEmp().subscribe(data=>{
+    //   this.employees=data
+    //   this.generateChart()
+    // })
+    this.employeeDataService.fetchEmp().then(data=>{
+      this.employees=data
+      this.generateChart()
+    })
   }
   async generateChart(){
-    this.employees=await this.employeeDataService.getEmployees();
+    // this.employeeDataService.getEmp().subscribe(data=>{this.employees=data})
+    // this.employees=await this.employeeDataService.getEmployees();
     console.log(this.employees)
     for(var emp of this.employees){
       for(let i=0;i<this.data.length;i++){
@@ -43,6 +51,14 @@ export class ChartComponent implements OnInit {
           break;
         }
       }
+    }
+  }
+  toggleChart(){
+    if(this.type==ChartType.PieChart){
+      this.type=ChartType.BarChart
+    }
+    else{
+      this.type=ChartType.PieChart
     }
   }
 
